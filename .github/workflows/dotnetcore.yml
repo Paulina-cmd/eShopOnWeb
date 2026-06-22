@@ -1,22 +1,26 @@
-name: eShopOnWeb Build and Test
+name: Build and Test .NET
 
-#Triggers (uncomment line below to use it)
-#on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: "8.0.x"
-          dotnet-quality: "preview"
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Build with dotnet
-        run: dotnet build ./eShopOnWeb.sln --configuration Release
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Test with dotnet
-        run: dotnet test ./eShopOnWeb.sln --configuration Release
+    - name: Restore Dependencies
+      run: dotnet restore src/Web/Web.csproj
+
+    - name: Build Solution
+      run: dotnet build src/Web/Web.csproj --configuration Release --no-restore
